@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -13,10 +14,13 @@ public class InputManager : MonoBehaviour
     [SerializeField] private float _powerUseDecline;
     private float StartZOffset;
 
-    private CharacterController _playerCharacterController;
     private Vector3 _moveDirection;
     private Vector3 _movementVelocity;
     private Transform _cameraObject;
+
+
+    //water
+    public ParticleSystem ParticlesWater;
 
 
 
@@ -33,9 +37,20 @@ public class InputManager : MonoBehaviour
         switch (_cloudStats.CurrentMode)
         {
             case CloudStats.ElementMode.Water:
-                if (Input.GetKey(KeyCode.Space) && _cloudStats.WaterSupply > 0)
+                if ((Input.GetKeyDown(KeyCode.Space) || Input.GetKey(KeyCode.Space)) && _cloudStats.WaterSupply > 0)
                 {
+                    ParticlesWater.Play();
                     _cloudStats.WaterSupply -= _powerUseDecline * Time.deltaTime;
+
+                    //actual stuff
+                    if (Physics.SphereCast(transform.position, transform.localScale.x, Vector3.down, out RaycastHit hitInfo, Camera.main.farClipPlane))
+                    {
+                        if (hitInfo.collider != null)
+                        {
+                            //Debug.Log($"{hitInfo.collider.gameObject.name} got clicked on.");
+                            ActivateWaterEffect(hitInfo.collider.gameObject);
+                        }
+                    }
                 }
                 break;
             case CloudStats.ElementMode.Elek:
@@ -91,5 +106,14 @@ public class InputManager : MonoBehaviour
         transform.position = new Vector3(transform.position.x, transform.position.y, StartZOffset);
 
 
+    }
+
+    private void ActivateWaterEffect(GameObject gameObject)
+    {
+        IHaveWaterEffect[] waterUsers = gameObject.GetComponents<IHaveWaterEffect>();
+        foreach (IHaveWaterEffect waterUser in waterUsers)
+        {
+            waterUser.DoWaterEffect();
+        }
     }
 }

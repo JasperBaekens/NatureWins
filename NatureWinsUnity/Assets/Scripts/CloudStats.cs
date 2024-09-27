@@ -15,12 +15,30 @@ public class CloudStats : MonoBehaviour
 
     public ElementMode CurrentMode;
 
-
+    [SerializeField] Material materialWaterMode;
+    [SerializeField] Material materialElekMode;
+    [SerializeField] GameObject GameObject;
 
     // Update is called once per frame
     void Update()
-    { 
-    
+    {
+        switch (CurrentMode)
+        {
+            case ElementMode.Water:
+                if (GameObject.GetComponent<Renderer>().material != materialWaterMode)
+                {
+                    GameObject.GetComponent<Renderer>().material = materialWaterMode;
+                }
+                break;
+
+            case ElementMode.Elek:
+                if (GameObject.GetComponent<Renderer>().material != materialElekMode)
+                {
+                    GameObject.GetComponent<Renderer>().material = materialElekMode;
+                }
+                break;
+        }
+
     }
 
 }

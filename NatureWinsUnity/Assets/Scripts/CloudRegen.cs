@@ -21,7 +21,7 @@ public class CloudRegen : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.DrawRay(_camera.transform.position, (transform.position - _camera.transform.position).normalized);
+        //Debug.DrawRay(_camera.transform.position, (transform.position - _camera.transform.position).normalized);
 
         if (Physics.SphereCast(_camera.transform.position, _playerModel.transform.localScale.x, (transform.position - _camera.transform.position).normalized, out RaycastHit hitInfo, _camera.farClipPlane))
         {
@@ -35,7 +35,6 @@ public class CloudRegen : MonoBehaviour
             }
         }
         previousHitInfo = hitInfo;
-
     }
     void GiveWater(GameObject gameObject)
     {
