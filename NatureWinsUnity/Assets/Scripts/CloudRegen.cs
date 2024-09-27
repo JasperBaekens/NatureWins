@@ -29,21 +29,36 @@ public class CloudRegen : MonoBehaviour
             {
                 //Debug.Log($"{hitInfo.collider.gameObject.name} got clicked on.");
                 GiveWater(hitInfo.collider.gameObject);
+                GiveWind(hitInfo.collider.gameObject);
+                GiveElek(hitInfo.collider.gameObject);
+
             }
-            previousHitInfo = hitInfo;
         }
+        previousHitInfo = hitInfo;
+
     }
     void GiveWater(GameObject gameObject)
     {
-        //single clickable behaviour
-        //IClickable clickable = gameObject.GetComponent<IClickable>(); //make a variable that can only hold the IClickable gameobjects that have the IClickable interface
-        //clickable?.HandleClick(); //if clickable object is not null then execute handleclick
-
-        //mutliple clickable behaviours
-        IGiveWater[] watergivers = gameObject.GetComponents<IGiveWater>();
-        foreach (IGiveWater watergiver in watergivers)
+        IGiveWater[] waterGivers = gameObject.GetComponents<IGiveWater>();
+        foreach (IGiveWater waterGiver in waterGivers)
         {
-            watergiver.GiveWater();
+            waterGiver.GiveWater();
+        }
+    }
+    void GiveWind(GameObject gameObject)
+    {
+        IGiveWind[] windGivers = gameObject.GetComponents<IGiveWind>();
+        foreach (IGiveWind windGiver in windGivers)
+        {
+            windGiver.GiveWind();
+        }
+    }
+    void GiveElek(GameObject gameObject)
+    {
+        IGiveElek[] elekGivers = gameObject.GetComponents<IGiveElek>();
+        foreach (IGiveElek elekGiver in elekGivers)
+        {
+            elekGiver.GiveElek();
         }
     }
 
