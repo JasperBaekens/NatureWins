@@ -22,6 +22,7 @@ public class InputManager : MonoBehaviour
     //water
     public ParticleSystem ParticlesWater;
 
+    [SerializeField] private RectTransform _waterSupplyBarPosition;
 
 
     private void Awake()
@@ -39,18 +40,29 @@ public class InputManager : MonoBehaviour
             case CloudStats.ElementMode.Water:
                 if ((Input.GetKeyDown(KeyCode.Space) || Input.GetKey(KeyCode.Space)) && _cloudStats.WaterSupply > 0)
                 {
-                    ParticlesWater.Play();
+                    DoParticleEffect(ParticlesWater);
+
                     _cloudStats.WaterSupply -= _powerUseDecline * Time.deltaTime;
 
+
                     //actual stuff
-                    if (Physics.SphereCast(transform.position, transform.localScale.x, Vector3.down, out RaycastHit hitInfo, Camera.main.farClipPlane))
+                    RaycastHit[] rayCastHits = Physics.SphereCastAll(transform.position, transform.localScale.x, Vector3.down, Camera.main.farClipPlane);
+                    if (rayCastHits.Length > 0)
                     {
-                        if (hitInfo.collider != null)
+                        foreach (RaycastHit hitInfo in rayCastHits)
                         {
-                            //Debug.Log($"{hitInfo.collider.gameObject.name} got clicked on.");
-                            ActivateWaterEffect(hitInfo.collider.gameObject);
+                            if (hitInfo.collider != null)
+                            {
+                                //Debug.Log($"{hitInfo.collider.gameObject.name} got clicked on.");
+                                ActivateWaterEffect(hitInfo.collider.gameObject);
+                            }
                         }
                     }
+                }
+                else
+                {
+                    StopParticleEffect(ParticlesWater);
+
                 }
                 break;
             case CloudStats.ElementMode.Elek:
@@ -88,7 +100,7 @@ public class InputManager : MonoBehaviour
         //Quickly made no out of edges stuff
         if (Camera.main.WorldToViewportPoint(transform.position).y > 1)
         {
-            transform.position = new Vector3(transform.position.x, Camera.main.ViewportToWorldPoint(new Vector3(0.5f,1f, Camera.main.WorldToViewportPoint(transform.position).z)).y, 0);
+            transform.position = new Vector3(transform.position.x, Camera.main.ViewportToWorldPoint(new Vector3(0.5f, 1f, Camera.main.WorldToViewportPoint(transform.position).z)).y, 0);
         }
         if (Camera.main.WorldToViewportPoint(transform.position).y < 0)
         {
@@ -106,6 +118,21 @@ public class InputManager : MonoBehaviour
         transform.position = new Vector3(transform.position.x, transform.position.y, StartZOffset);
 
 
+        //change position of water supply
+
+        _waterSupplyBarPosition.anchoredPosition = new Vector2(Camera.main.WorldToScreenPoint(transform.position).x, Camera.main.WorldToScreenPoint(transform.position).y -1 * 20f);
+
+    }
+
+    private void DoParticleEffect(ParticleSystem pS)
+    {
+        ParticleSystem.EmissionModule emission = pS.emission;
+        emission.rateOverTime = 10f;
+    }
+    private void StopParticleEffect(ParticleSystem pS)
+    {
+        ParticleSystem.EmissionModule emission = pS.emission;
+        emission.rateOverTime = 0f;
     }
 
     private void ActivateWaterEffect(GameObject gameObject)
@@ -113,6 +140,7 @@ public class InputManager : MonoBehaviour
         IHaveWaterEffect[] waterUsers = gameObject.GetComponents<IHaveWaterEffect>();
         foreach (IHaveWaterEffect waterUser in waterUsers)
         {
+            Debug.Log($"{waterUser} got activated");
             waterUser.DoWaterEffect();
         }
     }
