@@ -1,48 +1,40 @@
 using UnityEngine;
 
-public class MakePuddle : MonoBehaviour, IHaveWaterEffect
+public class MakeCarAlarmGoOff : MonoBehaviour, IHaveElekEffect
 {
-    [SerializeField] private AudioClip PuddleMakeAudio;
-    [SerializeField] private float _volumeAudio;
-
-
-
-
     [SerializeField] private GameObject AfterActivation;
     public float NeededForActivationCounterLimit = 1;
     public float NeededForActivationCounter = 0;
-    public ParticleSystem ParticlesFillWater;
+    public ParticleSystem ParticlesFillElek;
 
-    private bool DoWaterSplooshy;
+    private bool DoElekSplooshy;
 
     private void Update()
     {
-        if (DoWaterSplooshy)
+        if (DoElekSplooshy)
         {
-            DoParticleEffect(ParticlesFillWater);
-            DoWaterSplooshy = false;
+            DoParticleEffect(ParticlesFillElek);
+            DoElekSplooshy = false;
         }
         else
         {
-            StopParticleEffect(ParticlesFillWater);
+            StopParticleEffect(ParticlesFillElek);
         }
 
     }
 
-    public void DoWaterEffect()
+    public void DoElekEffect()
     {
 
         if (NeededForActivationCounter < NeededForActivationCounterLimit)
         {
-            DoWaterSplooshy = true;
+            DoElekSplooshy = true;
             NeededForActivationCounter += Time.deltaTime;
             if (NeededForActivationCounter >= NeededForActivationCounterLimit)
             {
                 GameObject spawnedObject = Instantiate(AfterActivation);
                 spawnedObject.transform.position = transform.position;
-                SoundFXManager.Instance.PlaySoundFXClip(PuddleMakeAudio, transform, _volumeAudio);
-
-                gameObject.SetActive(false);
+                GameObject.Destroy(gameObject);
             }
         }
     }
@@ -56,6 +48,4 @@ public class MakePuddle : MonoBehaviour, IHaveWaterEffect
         ParticleSystem.EmissionModule emission = pS.emission;
         emission.rateOverTime = 0f;
     }
-
-
 }

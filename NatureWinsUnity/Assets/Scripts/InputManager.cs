@@ -5,6 +5,7 @@ using UnityEngine.EventSystems;
 public class InputManager : MonoBehaviour
 {
     private CloudStats _cloudStats;
+    private DerekStats _derekStats;
 
     //movement
     private Vector2 _movementInput;
@@ -31,14 +32,30 @@ public class InputManager : MonoBehaviour
     [SerializeField] private RectTransform _waterSupplyBarPosition;
     [SerializeField] private RectTransform _elekSupplyBarPosition;
 
+    //Audio
+    private bool IsAudioPlayedRain = false;
+    private float AudioLengthRain;
+    private float AudioLengthRainCounter;
+    [SerializeField] private AudioClip _rainingAudio;
+    [SerializeField] private float _volumeAudioWater;
+
+
+
+    private bool IsAudioPlayedElek = false;
+    private float AudioLengthElek;
+    private float AudioLengthElekCounter;
+    [SerializeField] private AudioClip _elekAudio;
+    [SerializeField] private float _volumeAudioElek;
 
 
 
     private void Awake()
     {
         _cloudStats = FindAnyObjectByType<CloudStats>();
+        _derekStats = FindAnyObjectByType<DerekStats>();
         _cameraObject = Camera.main.transform;
         StartZOffset = transform.position.z;
+        AudioLengthRain = _rainingAudio.length;
     }
 
     void Update()
@@ -50,6 +67,20 @@ public class InputManager : MonoBehaviour
                 if ((Input.GetKeyDown(KeyCode.Space) || Input.GetKey(KeyCode.Space)) && _cloudStats.WaterSupply > 0)
                 {
                     DoParticleEffect(ParticlesWater);
+
+                    if (!IsAudioPlayedRain)
+                    {
+                        SoundFXManager.Instance.PlaySoundFXClip(_rainingAudio, transform, _volumeAudioWater);
+                        IsAudioPlayedRain = true;
+                    }
+
+
+                    if (AudioLengthRainCounter >= AudioLengthRain)
+                    {
+                        AudioLengthRainCounter = 0;
+                        IsAudioPlayedRain = false;
+                    }
+
 
                     _cloudStats.WaterSupply -= _powerUseDecline * Time.deltaTime;
 
@@ -73,12 +104,31 @@ public class InputManager : MonoBehaviour
                     StopParticleEffect(ParticlesWater);
                     StopParticleEffect(ParticlesElek);
                 }
+                AudioLengthRainCounter += Time.deltaTime;
+
                 break;
             case CloudStats.ElementMode.Elek:
                 if ((Input.GetKeyDown(KeyCode.Space) || Input.GetKey(KeyCode.Space)) && _cloudStats.ElekSupply > 0)
                 {
                     DoParticleEffect(ParticlesElek);
                     _cloudStats.ElekSupply -= _powerUseDecline * Time.deltaTime;
+
+
+                    if (!IsAudioPlayedElek)
+                    {
+                        SoundFXManager.Instance.PlaySoundFXClip(_elekAudio, transform, _volumeAudioElek);
+                        IsAudioPlayedElek = true;
+                    }
+
+
+                    if (AudioLengthElekCounter >= AudioLengthElek)
+                    {
+                        AudioLengthElekCounter = 0;
+                        IsAudioPlayedElek = false;
+                    }
+
+
+
 
 
 
@@ -101,6 +151,7 @@ public class InputManager : MonoBehaviour
                     StopParticleEffect(ParticlesWater);
                     StopParticleEffect(ParticlesElek);
                 }
+                AudioLengthElekCounter += Time.deltaTime;
 
                 break;
         }

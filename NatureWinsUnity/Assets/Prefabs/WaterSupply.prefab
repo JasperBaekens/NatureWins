@@ -123,3 +123,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d127c55f7959d14d8d79bf73f9f9877, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  WaterFillAudio: {fileID: 8300000, guid: bd0e98734e02e234bae6fd396b0fbe3f, type: 3}
+  _volumeAudio: 1

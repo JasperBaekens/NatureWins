@@ -8,6 +8,10 @@ public class DerekStats : MonoBehaviour
     [Range(0f, 100f)] public float DerekLoserMeter = 0f;
     public float DerekLoserLookORadius = 1f;
 
+    private DerekMovement _derekMovement;
+    private float _derekMovementSpeedStandard;
+
+   
     public enum DerekModeStates
     {
         Standing,
@@ -28,16 +32,22 @@ public class DerekStats : MonoBehaviour
     public DerekModeStates DerekCurrentMode;
     public DerekModeStates DerekPreviousMode;
 
-    public float InBetweenModesTimeLimit = 0.8f;
-    public float InBetweenModesTimeCurrent;
+    [SerializeField] public float InBetweenModesTimeLimit = 0.5f;
+    private float _inBetweenModesTimeCurrent = 0f;
     public bool IsInBetweenModes = false;
 
+    public float DerekFreezeLimit = 3f;
+    public float DerekFreezeLimitCounter;
 
 
 
 
 
-
+    private void Awake()
+    {
+        _derekMovement = FindAnyObjectByType<DerekMovement>();
+        _derekMovementSpeedStandard = _derekMovement.DerekMovementSpeed;
+    }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -64,7 +74,18 @@ public class DerekStats : MonoBehaviour
                 SupriseDerekDisplay.SetActive(false);
                 InBetweenDerekDisplay.SetActive(false);
 
+                _derekMovement.DerekMovementSpeed = 0f;
+                
+                if(DerekFreezeLimitCounter <= DerekFreezeLimit)
+                {
+                    DerekFreezeLimitCounter += Time.deltaTime;
+                    if (DerekFreezeLimitCounter >= DerekFreezeLimit)
+                    {
+                        DerekFreezeLimitCounter = 0;
+                        DerekCurrentMode = DerekModeStates.Walking;
+                    }
 
+                }
 
 
                 CheckAndChangeInbetweenFrame();
@@ -77,6 +98,10 @@ public class DerekStats : MonoBehaviour
                 WalkingDerekDisplay.SetActive(true);
                 SupriseDerekDisplay.SetActive(false);
                 InBetweenDerekDisplay.SetActive(false);
+
+                _derekMovement.DerekMovementSpeed = _derekMovementSpeedStandard;
+
+
 
                 float angle = Mathf.Sin(Time.time * DerekWiggleSpeed) * DerekWiggleAngle;
                 WalkingDerekDisplay.transform.localRotation = Quaternion.AngleAxis(angle, Vector3.forward);
@@ -91,6 +116,23 @@ public class DerekStats : MonoBehaviour
                 WalkingDerekDisplay.SetActive(false);
                 SupriseDerekDisplay.SetActive(true);
                 InBetweenDerekDisplay.SetActive(false);
+
+                _derekMovement.DerekMovementSpeed = 0f;
+
+
+
+
+
+                if (DerekFreezeLimitCounter <= DerekFreezeLimit)
+                {
+                    DerekFreezeLimitCounter += Time.deltaTime;
+                    if (DerekFreezeLimitCounter >= DerekFreezeLimit)
+                    {
+                        DerekFreezeLimitCounter = 0;
+                        DerekCurrentMode = DerekModeStates.Walking;
+                    }
+
+                }
 
 
 
@@ -117,16 +159,16 @@ public class DerekStats : MonoBehaviour
         if (DerekPreviousMode != DerekCurrentMode || IsInBetweenModes)
         {
             IsInBetweenModes = true;
-            InBetweenModesTimeCurrent += Time.deltaTime;
+            _inBetweenModesTimeCurrent += Time.deltaTime;
             //display inbetween model
             StandingDerekDisplay.SetActive(false);
             WalkingDerekDisplay.SetActive(false);
             SupriseDerekDisplay.SetActive(false);
             InBetweenDerekDisplay.SetActive(true);
 
-            if (InBetweenModesTimeCurrent <= InBetweenModesTimeLimit)
+            if (_inBetweenModesTimeCurrent >= InBetweenModesTimeLimit)
             {
-                InBetweenModesTimeCurrent = 0;
+                _inBetweenModesTimeCurrent = 0;
                 IsInBetweenModes = false;
             }
         }

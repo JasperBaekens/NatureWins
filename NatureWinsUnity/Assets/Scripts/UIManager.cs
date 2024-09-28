@@ -12,11 +12,21 @@ public class UIManager : MonoBehaviour
     private CloudStats _cloudStats;
     private DerekStats _derekStats;
 
+    [SerializeField] public Image _endScreen1;
+    [SerializeField] public Image _endScreen2;
+    [SerializeField] public Image _endScreen3;
+    [SerializeField] public Image _whiteScreen;
+
 
     private void Awake()
     {
         _cloudStats = FindAnyObjectByType<CloudStats>();
         _derekStats = FindAnyObjectByType<DerekStats>();
+
+        _endScreen1.enabled = false;
+        _endScreen2.enabled = false;
+        _endScreen3.enabled = false;
+        _whiteScreen.enabled = false;
     }
 
 
