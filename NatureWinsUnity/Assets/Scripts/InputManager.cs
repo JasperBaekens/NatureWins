@@ -56,6 +56,8 @@ public class InputManager : MonoBehaviour
         _cameraObject = Camera.main.transform;
         StartZOffset = transform.position.z;
         AudioLengthRain = _rainingAudio.length;
+        AudioLengthElek = _elekAudio.length;
+
     }
 
     void Update()
@@ -64,6 +66,10 @@ public class InputManager : MonoBehaviour
         switch (_cloudStats.CurrentMode)
         {
             case CloudStats.ElementMode.Water:
+
+                _waterSupplyBarPosition.anchoredPosition = new Vector2(Camera.main.WorldToViewportPoint(transform.position).x*1920, Camera.main.WorldToViewportPoint(transform.position).y*1080 - 1 * 10f);
+                _elekSupplyBarPosition.anchoredPosition = new Vector2(-5000, -5000);
+
                 if ((Input.GetKeyDown(KeyCode.Space) || Input.GetKey(KeyCode.Space)) && _cloudStats.WaterSupply > 0)
                 {
                     DoParticleEffect(ParticlesWater);
@@ -108,6 +114,11 @@ public class InputManager : MonoBehaviour
 
                 break;
             case CloudStats.ElementMode.Elek:
+
+                _waterSupplyBarPosition.anchoredPosition = new Vector2(-5000, -5000);
+                _elekSupplyBarPosition.anchoredPosition = new Vector2(Camera.main.WorldToViewportPoint(transform.position).x * 1920, Camera.main.WorldToViewportPoint(transform.position).y * 1080 - 1 * 10f);
+
+
                 if ((Input.GetKeyDown(KeyCode.Space) || Input.GetKey(KeyCode.Space)) && _cloudStats.ElekSupply > 0)
                 {
                     DoParticleEffect(ParticlesElek);
@@ -200,11 +211,6 @@ public class InputManager : MonoBehaviour
 
         transform.position = new Vector3(transform.position.x, transform.position.y, StartZOffset);
 
-
-        //change position of water supply
-
-        _waterSupplyBarPosition.anchoredPosition = new Vector2(Camera.main.WorldToScreenPoint(transform.position).x, Camera.main.WorldToScreenPoint(transform.position).y -1 * 10f);
-        _elekSupplyBarPosition.anchoredPosition = new Vector2(Camera.main.WorldToScreenPoint(transform.position).x, Camera.main.WorldToScreenPoint(transform.position).y - 1 * 50f);
 
     }
 

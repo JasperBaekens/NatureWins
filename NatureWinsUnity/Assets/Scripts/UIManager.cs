@@ -35,8 +35,13 @@ public class UIManager : MonoBehaviour
     {
         //updates motivationbar visual on ui
         DerekLoserBar.fillAmount = _derekStats.DerekLoserMeter / 100; // DerekLoserMeter Max
-        WaterBar.fillAmount = _cloudStats.WaterSupply / 20; //watersupplymax
-        ElekBar.fillAmount = _cloudStats.ElekSupply / 20; //watersupplymax
-
+        if (WaterBar.enabled)
+        {
+            WaterBar.fillAmount = _cloudStats.WaterSupply / 20; //watersupplymax
+        }
+        if (ElekBar.enabled)
+        {
+            ElekBar.fillAmount = _cloudStats.ElekSupply / 20;
+        }
     }
 }

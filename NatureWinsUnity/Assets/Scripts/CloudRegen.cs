@@ -5,8 +5,6 @@ public class CloudRegen : MonoBehaviour
     private Camera _camera;
     private RaycastHit previousHitInfo;
 
-    [SerializeField] private GameObject _playerModel;
-
     private void Awake()
     {
         _camera = Camera.main;
@@ -23,7 +21,7 @@ public class CloudRegen : MonoBehaviour
     {
         //Debug.DrawRay(_camera.transform.position, (transform.position - _camera.transform.position).normalized);
 
-        if (Physics.SphereCast(_camera.transform.position, _playerModel.transform.localScale.x, (transform.position - _camera.transform.position).normalized, out RaycastHit hitInfo, _camera.farClipPlane))
+        if (Physics.SphereCast(_camera.transform.position, 1, (transform.position - _camera.transform.position).normalized, out RaycastHit hitInfo, _camera.farClipPlane))
         {
             if (hitInfo.collider != null && previousHitInfo.collider != hitInfo.collider)
             {
