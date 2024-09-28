@@ -22,7 +22,16 @@ public class InputManager : MonoBehaviour
     //water
     public ParticleSystem ParticlesWater;
 
+    //Elek
+    public ParticleSystem ParticlesElek;
+
+
+
+    //bar positions
     [SerializeField] private RectTransform _waterSupplyBarPosition;
+    [SerializeField] private RectTransform _elekSupplyBarPosition;
+
+
 
 
     private void Awake()
@@ -62,14 +71,37 @@ public class InputManager : MonoBehaviour
                 else
                 {
                     StopParticleEffect(ParticlesWater);
-
+                    StopParticleEffect(ParticlesElek);
                 }
                 break;
             case CloudStats.ElementMode.Elek:
-                if (Input.GetKey(KeyCode.Space) && _cloudStats.ElekSupply > 0)
+                if ((Input.GetKeyDown(KeyCode.Space) || Input.GetKey(KeyCode.Space)) && _cloudStats.ElekSupply > 0)
                 {
+                    DoParticleEffect(ParticlesElek);
                     _cloudStats.ElekSupply -= _powerUseDecline * Time.deltaTime;
+
+
+
+                    //actual stuff
+                    RaycastHit[] rayCastHits = Physics.SphereCastAll(transform.position, transform.localScale.x, Vector3.down, Camera.main.farClipPlane);
+                    if (rayCastHits.Length > 0)
+                    {
+                        foreach (RaycastHit hitInfo in rayCastHits)
+                        {
+                            if (hitInfo.collider != null)
+                            {
+                                //Debug.Log($"{hitInfo.collider.gameObject.name} got clicked on.");
+                                ActivateElekEffect(hitInfo.collider.gameObject);
+                            }
+                        }
+                    }
                 }
+                else
+                {
+                    StopParticleEffect(ParticlesWater);
+                    StopParticleEffect(ParticlesElek);
+                }
+
                 break;
         }
 
@@ -120,7 +152,8 @@ public class InputManager : MonoBehaviour
 
         //change position of water supply
 
-        _waterSupplyBarPosition.anchoredPosition = new Vector2(Camera.main.WorldToScreenPoint(transform.position).x, Camera.main.WorldToScreenPoint(transform.position).y -1 * 20f);
+        _waterSupplyBarPosition.anchoredPosition = new Vector2(Camera.main.WorldToScreenPoint(transform.position).x, Camera.main.WorldToScreenPoint(transform.position).y -1 * 10f);
+        _elekSupplyBarPosition.anchoredPosition = new Vector2(Camera.main.WorldToScreenPoint(transform.position).x, Camera.main.WorldToScreenPoint(transform.position).y - 1 * 50f);
 
     }
 
@@ -144,4 +177,14 @@ public class InputManager : MonoBehaviour
             waterUser.DoWaterEffect();
         }
     }
+    private void ActivateElekEffect(GameObject gameObject)
+    {
+        IHaveElekEffect[] elekUsers = gameObject.GetComponents<IHaveElekEffect>();
+        foreach (IHaveElekEffect elekUser in elekUsers)
+        {
+            Debug.Log($"{elekUser} got activated");
+            elekUser.DoElekEffect();
+        }
+    }
+
 }
